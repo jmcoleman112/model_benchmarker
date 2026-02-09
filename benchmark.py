@@ -126,12 +126,13 @@ def run_benchmark(args) -> Path:
     }
 
     model_name = safe_name(model_path.stem)
+    output_tag = safe_name(model_path.name)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    output_path = output_dir / "{0}_benchmark.json".format(model_name)
+    output_path = output_dir / "{0}_benchmark.json".format(output_tag)
     if output_path.exists():
         stamp = dt.datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-        output_path = output_dir / "{0}_benchmark_{1}.json".format(model_name, stamp)
+        output_path = output_dir / "{0}_benchmark_{1}.json".format(output_tag, stamp)
 
     results: Dict[str, Any] = {
         "model": {
