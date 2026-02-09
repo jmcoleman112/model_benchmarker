@@ -56,6 +56,8 @@ def run_benchmark(args) -> Path:
     skipped = 0
     start_time = time.perf_counter()
     start_time_utc = dt.datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    progress_interval = float(args.progress_interval or 0)
+    last_progress = start_time
 
     def should_stop() -> bool:
         if args.iters > 0 and infer_count >= args.iters:
@@ -86,6 +88,25 @@ def run_benchmark(args) -> Path:
             infer_count += 1
             infer_min = dt_inf if infer_min is None else min(infer_min, dt_inf)
             infer_max = dt_inf if infer_max is None else max(infer_max, dt_inf)
+            if progress_interval > 0:
+                now = time.perf_counter()
+                if (now - last_progress) >= progress_interval:
+                    elapsed = now - start_time
+                    avg_ms = (infer_sum / infer_count * 1000.0) if infer_count else None
+                    fps = (infer_count / infer_sum) if infer_sum > 0 else None
+                    avg_ms_str = "{0:.2f}".format(avg_ms) if avg_ms is not None else "n/a"
+                    fps_str = "{0:.2f}".format(fps) if fps is not None else "n/a"
+                    print(
+                        "progress: {0:.1f}s iters={1} avg_ms={2} fps={3} skipped={4}".format(
+                            elapsed,
+                            infer_count,
+                            avg_ms_str,
+                            fps_str,
+                            skipped,
+                        ),
+                        flush=True,
+                    )
+                    last_progress = now
     finally:
         if sampler:
             sampler.stop()

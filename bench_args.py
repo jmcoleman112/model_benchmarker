@@ -29,6 +29,8 @@ def parse_args() -> argparse.Namespace:
 
     parser.add_argument("--stats-interval", type=int, default=1000, help="Stats sampling interval in milliseconds.")
 
+    parser.add_argument("--progress-interval", type=float, default=30.0, help="Progress logging interval in seconds (0 disables).")
+
     parser.add_argument("--output-dir", default="bench_results", help="Directory to write result JSON files.")
 
     parser.add_argument("--sync", action="store_true", help="Synchronize CUDA before/after timing for more accurate inference time.")
